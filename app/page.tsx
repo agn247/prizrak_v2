@@ -112,7 +112,7 @@ export default function LandingPageV7() {
                 <a href="#calculator" className="hover:text-white transition-colors">Pricing</a>
             </div>
             <div className="flex items-center gap-4">
-                <Link href="/dashboard">
+                <Link href="/overview">
                   <button className="bg-white text-black px-5 py-2 rounded-lg text-xs font-bold uppercase hover:bg-cyan-400 transition-all">
                       Launch App
                   </button>
