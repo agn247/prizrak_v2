@@ -5,7 +5,7 @@ import {
   Ghost, LayoutDashboard, Settings, LogOut, 
   Activity, Layers, Zap, TrendingUp, 
   ArrowDownRight, ChevronDown, ChevronRight, ChevronUp,
-  Clock, BarChart2, Hash, ArrowUpRight
+  Clock, BarChart2, Hash, ArrowUpRight, Check, Copy
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -48,12 +48,26 @@ const TradingViewWidget = () => {
   );
 };
 
-export default function DashboardV14() {
+export default function DashboardV15() {
   const [isChartOpen, setIsChartOpen] = useState(true);
   const [isGridOpen, setIsGridOpen] = useState(true);
+  
+  // --- NOTIFICATION STATE ---
+  const [toast, setToast] = useState<{ show: boolean, msg: string } | null>(null);
+
+  // --- COPY FUNCTION ---
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setToast({ show: true, msg: text });
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      setToast(null);
+    }, 3000);
+  };
 
   return (
-    <div className="min-h-screen bg-[#0e0e10] text-zinc-300 font-sans flex overflow-hidden selection:bg-cyan-500/30">
+    <div className="min-h-screen bg-[#0e0e10] text-zinc-300 font-sans flex overflow-hidden selection:bg-cyan-500/30 relative">
       
       {/* GLOBAL CSS TO HIDE SCROLLBAR */}
       <style jsx global>{`
@@ -64,7 +78,30 @@ export default function DashboardV14() {
           -ms-overflow-style: none;  /* IE and Edge */
           scrollbar-width: none;  /* Firefox */
         }
+        
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-animate {
+          animation: slideIn 0.3s ease-out forwards;
+        }
       `}</style>
+
+      {/* --- TOAST NOTIFICATION --- */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 toast-animate">
+          <div className="bg-[#18181b] border border-cyan-500/30 text-white px-4 py-3 rounded-lg shadow-2xl shadow-cyan-900/20 flex items-center gap-3">
+            <div className="bg-cyan-500/20 p-1.5 rounded-full text-cyan-400">
+              <Check className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-xs text-zinc-400 font-bold uppercase tracking-wide">Copied to Clipboard</div>
+              <div className="text-sm font-bold font-mono">{toast.msg}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* --- SIDEBAR --- */}
       <aside className="w-16 md:w-64 bg-[#121214] border-r border-white/5 flex flex-col justify-between z-30 flex-shrink-0">
@@ -200,7 +237,7 @@ export default function DashboardV14() {
                           { spot: 'BONK/USDT', ex: 'BYBIT', price: '0.0000212', chg: '+0.0000015', vol: '15 / 88.2', time: '09:04:00', date: '30.07.2025' },
                           { spot: 'SEI/USDT', ex: 'BINANCE', price: '0.3421', chg: '+0.0152', vol: '22 / 105.0', time: '09:04:45', date: '30.07.2025' }
                         ].map((item, i) => (
-                           <div key={i} className="bg-[#18181b] border-l-4 border-emerald-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
+                           <div key={i} onClick={() => handleCopy(item.spot)} className="bg-[#18181b] border-l-4 border-emerald-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
                               {/* LINE 1: IDENTITY */}
                               <div className="flex justify-between items-center mb-2">
                                  <span className="text-xs text-zinc-500 font-bold uppercase tracking-widest drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]">{item.ex}</span>
@@ -253,7 +290,7 @@ export default function DashboardV14() {
                           { spot: 'OP/USDT', ex: 'HTX', price: '1.4520', chg: '-0.0820 pts', vol: '14 / 66.5', time: '09:04:10', date: '30.07.2025' },
                           { spot: 'MATIC/USDT', ex: 'BYBIT', price: '0.5210', chg: '-0.0120 pts', vol: '9 / 32.1', time: '09:05:05', date: '30.07.2025' }
                         ].map((item, i) => (
-                           <div key={i} className="bg-[#18181b] border-l-4 border-rose-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
+                           <div key={i} onClick={() => handleCopy(item.spot)} className="bg-[#18181b] border-l-4 border-rose-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
                               <div className="flex justify-between items-center mb-2">
                                  <span className="text-xs text-zinc-500 font-bold uppercase tracking-widest drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]">{item.ex}</span>
                                  <span className="text-[9px] bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded font-bold uppercase">DUMP</span>
@@ -299,7 +336,7 @@ export default function DashboardV14() {
                           { spot: 'INJ/USDT', ex: 'HTX', price: '24.100', spread: '0.9%', vol: '6 / 14.0', time: '09:04:55', date: '30.07.2025' },
                           { spot: 'RUNE/USDT', ex: 'OKX', price: '4.2100', spread: '1.5%', vol: '3 / 8.5', time: '09:06:10', date: '30.07.2025' }
                         ].map((item, i) => (
-                           <div key={i} className="bg-[#18181b] border-l-4 border-orange-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
+                           <div key={i} onClick={() => handleCopy(item.spot)} className="bg-[#18181b] border-l-4 border-orange-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
                               <div className="flex justify-between items-center mb-2">
                                  <span className="text-xs text-zinc-500 font-bold uppercase tracking-widest drop-shadow-[0_0_8px_rgba(249,115,22,0.5)]">{item.ex}</span>
                                  <span className="text-[9px] bg-orange-500/10 text-orange-400 border border-orange-500/20 px-1.5 py-0.5 rounded font-bold uppercase">ANOMALY</span>
@@ -345,7 +382,7 @@ export default function DashboardV14() {
                           { spot: 'AVAX/USDT', ex: 'HTX', price: '28.500', conf: '78%', reason: 'Whale Wall', time: '09:08:10', date: '30.07.2025' },
                           { spot: 'NEAR/USDT', ex: 'BINANCE', price: '5.100', conf: '88%', reason: 'Accumulation', time: '09:10:00', date: '30.07.2025' }
                         ].map((item, i) => (
-                           <div key={i} className="bg-[#18181b] border-l-4 border-yellow-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
+                           <div key={i} onClick={() => handleCopy(item.spot)} className="bg-[#18181b] border-l-4 border-yellow-500 pl-3 pr-3 py-3 rounded hover:bg-white/[0.02] cursor-pointer group transition-all">
                               <div className="flex justify-between items-center mb-2">
                                  <span className="text-xs text-zinc-500 font-bold uppercase tracking-widest drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]">{item.ex}</span>
                                  <span className="text-[9px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded font-bold uppercase">AI WALL</span>
